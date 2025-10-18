@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kegiatan Ekonomi - Ujian Online</title>
+    <style>
+        /* Impor Font Poppins dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #2196F3; /* Biru Cerah */
+            --primary-light: #BBDEFB; /* Biru Muda */
+            --text-dark: #333;
+            --text-light: #777;
+            --bg-light: #f4f7f6;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --transition-speed: 0.3s;
+        }
+
+        /* Reset dan Dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        /* Container Utama */
+        .quiz-container {
+            width: 100%;
+            max-width: 768px;
+            margin-top: 50px;
+        }
+
+        /* Header / Judul */
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* Card Umum */
+        .card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            margin-bottom: 20px;
+            transition: all var(--transition-speed) ease-in-out;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        /* Tampilan Awal (Input Nama) */
+        #start-screen {
+            text-align: center;
+        }
+
+        #start-screen h2 {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-group input {
+            padding: 12px 15px;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 350px;
+            font-size: 16px;
+            transition: border-color var(--transition-speed);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Tombol Umum */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed), transform 0.1s;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #1976D2;
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-light);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--primary-light);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        /* Kuis Utama */
+        #quiz-screen {
+            display: none;
+        }
+
+        /* Indikator Soal */
+        .question-indicator {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Soal dan Opsi */
+        #question-text {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: block;
+            padding: 15px 20px;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            position: relative;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+        }
+
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* Gaya saat Opsi Dipilih */
+        .option-input:checked + .option-label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+            font-weight: 600;
+        }
+        
+        /* Huruf Opsi (A, B, C, D, E) */
+        .option-label span:first-child {
+            font-weight: 700;
+            margin-right: 10px;
+            display: inline-block;
+            min-width: 15px;
+        }
+
+        /* Navigasi */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 0 5px;
+        }
+
+        /* Tampilan Hasil */
+        #results-screen {
+            display: none;
+            text-align: center;
+        }
+
+        #results-screen h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        #final-score {
+            font-size: 3em;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        #motivation-message {
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        /* Pesan Sudah Selesai */
+        #completed-message {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+
+        #completed-message h2 {
+            color: #E53935; /* Merah */
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        /* Responsif */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .quiz-container {
+                margin-top: 10px;
+            }
+            .card {
+                padding: 20px;
+            }
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            #question-text {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>Kuis Kegiatan Ekonomi 📝</h1>
+
+        <div id="completed-message" class="card">
+            <h2>🚨 Kuis Sudah Selesai!</h2>
+            <p>Kamu sudah menyelesaikan kuis ini. Terima kasih!</p>
+            <p id="completion-details"></p>
+        </div>
+
+        <div id="start-screen" class="card">
+            <h2>Selamat Datang di Ujian Online!</h2>
+            <p style="margin-bottom: 25px;">Masukkan nama Anda untuk memulai kuis 25 soal.</p>
+            
+            <div class="input-group">
+                <input type="text" id="student-name-input" placeholder="Nama Lengkap Anda" required>
+                <button class="btn btn-primary" id="start-quiz-btn" onclick="startQuiz()">
+                    Mulai Kuis Sekarang
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="card">
+                <div class="question-indicator">
+                    Soal <span id="current-question-number">1</span> dari 25
+                </div>
+
+                <div id="question-content">
+                    <p id="question-text">Pertanyaan akan dimuat di sini...</p>
+                    <div id="options-container" class="options-container">
+                        </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="goToPrevQuestion()" disabled>
+                        &larr; Sebelumnya
+                    </button>
+                    <button class="btn btn-primary" id="next-btn" onclick="goToNextQuestion()">
+                        Selanjutnya &rarr;
+                    </button>
+                    <button class="btn btn-primary" id="submit-btn" onclick="submitQuiz()" style="display: none;">
+                        Kirim Jawaban
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="card">
+            <h2>Hasil Kuis Anda 🏆</h2>
+            <span id="final-score">Skor Anda: 0 dari 100</span>
+            <p id="motivation-message">Kerja bagus! Terus tingkatkan kemampuanmu 💪</p>
+            
+            <button class="btn btn-secondary" onclick="exportResults()">
+                ⬇️ Download Hasil Kuis (CSV)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data Soal Kuis (25 Soal Kegiatan Ekonomi)
+        const quizData = [
+            {
+                question: "Kegiatan ekonomi yang bertujuan untuk menambah nilai guna suatu barang atau jasa disebut...",
+                options: ["Konsumsi", "Distribusi", "Produksi", "Investasi", "Perdagangan"],
+                answer: "Produksi"
+            },
+            {
+                question: "Contoh dari kegiatan konsumsi adalah...",
+                options: ["Petani menanam padi", "Pabrik memproduksi mobil", "Siswa membeli buku tulis", "Pedagang menjual hasil kerajinan", "Bank memberikan pinjaman"],
+                answer: "Siswa membeli buku tulis"
+            },
+            {
+                question: "Penyaluran barang dari produsen ke konsumen disebut kegiatan...",
+                options: ["Produksi", "Konsumsi", "Distribusi", "Investasi", "Regulasi"],
+                answer: "Distribusi"
+            },
+            {
+                question: "Faktor produksi alam meliputi...",
+                options: ["Tenaga kerja dan keahlian", "Modal dan uang tunai", "Tanah, air, dan sumber daya mineral", "Mesin dan peralatan", "Organisasi dan manajemen"],
+                answer: "Tanah, air, dan sumber daya mineral"
+            },
+            {
+                question: "Inti dari masalah ekonomi adalah...",
+                options: ["Kenaikan harga barang", "Kelangkaan (scarcity)", "Tingginya pengangguran", "Perbedaan pendapatan", "Defisit anggaran"],
+                answer: "Kelangkaan (scarcity)"
+            },
+            {
+                question: "Pihak yang melakukan kegiatan konsumsi disebut...",
+                options: ["Produsen", "Distributor", "Investor", "Konsumen", "Pedagang"],
+                answer: "Konsumen"
+            },
+            {
+                question: "Orang yang mempunyai keahlian mengombinasikan faktor-faktor produksi disebut...",
+                options: ["Tenaga kerja", "Kapitalis", "Manajer", "Wirausahawan (entrepreneur)", "Karyawan"],
+                answer: "Wirausahawan (entrepreneur)"
+            },
+            {
+                question: "Dalam kegiatan produksi, yang termasuk faktor produksi modal adalah...",
+                options: ["Gedung pabrik dan mesin", "Petani dan buruh", "Tanah dan hutan", "Air dan udara", "Keahlian manajerial"],
+                answer: "Gedung pabrik dan mesin"
+            },
+            {
+                question: "Distribusi secara langsung terjadi ketika...",
+                options: ["Barang dijual melalui agen", "Barang dijual melalui pengecer", "Barang langsung dari produsen ke konsumen", "Barang disimpan di gudang", "Barang diekspor ke luar negeri"],
+                answer: "Barang langsung dari produsen ke konsumen"
+            },
+            {
+                question: "Tujuan utama kegiatan konsumsi adalah...",
+                options: ["Memperoleh keuntungan", "Meningkatkan produksi", "Memenuhi kebutuhan dan kepuasan", "Menciptakan lapangan kerja", "Mendistribusikan barang"],
+                answer: "Memenuhi kebutuhan dan kepuasan"
+            },
+            {
+                question: "Kegiatan membeli bahan baku dan membayar gaji karyawan termasuk dalam siklus kegiatan...",
+                options: ["Konsumsi rumah tangga", "Produksi", "Distribusi", "Investasi", "Perbankan"],
+                answer: "Produksi"
+            },
+            {
+                question: "Peran rumah tangga konsumen (RTK) dalam kegiatan ekonomi adalah sebagai...",
+                options: ["Produsen barang", "Penyalur barang", "Pemilik faktor produksi", "Pembuat kebijakan", "Penarik pajak"],
+                answer: "Pemilik faktor produksi"
+            },
+            {
+                question: "Perusahaan yang menghasilkan barang dan jasa disebut sebagai rumah tangga...",
+                options: ["Konsumsi", "Produsen", "Negara", "Luar negeri", "Pemerintah"],
+                answer: "Produsen"
+            },
+            {
+                question: "Biaya yang dikeluarkan untuk mendapatkan faktor produksi (tanah, tenaga kerja, modal) disebut...",
+                options: ["Biaya tetap", "Pendapatan", "Pengeluaran", "Imbalan faktor produksi", "Laba bersih"],
+                answer: "Imbalan faktor produksi"
+            },
+            {
+                question: "Upah, sewa, bunga, dan laba adalah contoh imbalan atas faktor produksi...",
+                options: ["Alam, Modal, Kewirausahaan, Tenaga Kerja", "Tenaga Kerja, Alam, Modal, Kewirausahaan", "Kewirausahaan, Tenaga Kerja, Modal, Alam", "Modal, Alam, Tenaga Kerja, Kewirausahaan", "Distribusi, Konsumsi, Produksi, Investasi"],
+                answer: "Tenaga Kerja, Alam, Modal, Kewirausahaan" /* Upah (TK), Sewa (Alam/Tanah), Bunga (Modal), Laba (Wirausaha) */
+            },
+            {
+                question: "Jenis distribusi yang melibatkan pedagang perantara (agen, makelar, grosir) disebut distribusi...",
+                options: ["Langsung", "Tidak langsung", "Intensif", "Selektif", "Eksklusif"],
+                answer: "Tidak langsung"
+            },
+            {
+                question: "Prinsip ekonomi adalah usaha untuk mendapatkan hasil tertentu dengan pengorbanan...",
+                options: ["Sebesar-besarnya", "Setinggi-tingginya", "Sebanyak-banyaknya", "Sekecil-kecilnya", "Sesuai standar"],
+                answer: "Sekecil-kecilnya"
+            },
+            {
+                question: "Motif ekonomi yang paling mendasar bagi seorang wirausahawan adalah...",
+                options: ["Mencari popularitas", "Meningkatkan status sosial", "Mencapai laba (keuntungan)", "Membantu orang lain", "Mengikuti tren pasar"],
+                answer: "Mencapai laba (keuntungan)"
+            },
+            {
+                question: "Kegiatan ekonomi yang berkaitan dengan penentuan harga jual di pasar adalah bagian dari kegiatan...",
+                options: ["Produksi", "Konsumsi", "Distribusi", "Pajak", "Ekspor"],
+                answer: "Distribusi"
+            },
+            {
+                question: "Pilihan yang harus diambil karena adanya kelangkaan disebut...",
+                options: ["Oportunitas", "Trade-off", "Skala prioritas", "Biaya peluang (opportunity cost)", "Hukum Gossen"],
+                answer: "Trade-off"
+            },
+             {
+                question: "Contoh kegiatan konsumsi yang paling tepat dilakukan oleh Rumah Tangga Pemerintah adalah...",
+                options: ["Membangun pabrik baru", "Membeli perlengkapan kantor untuk pelayanan publik", "Menyewakan tanah negara", "Menyalurkan bantuan sosial", "Mengekspor hasil pertanian"],
+                answer: "Membeli perlengkapan kantor untuk pelayanan publik"
+            },
+            {
+                question: "Konsep yang menjelaskan tentang pengorbanan yang dilakukan untuk memilih satu pilihan dan mengabaikan pilihan lain adalah...",
+                options: ["Biaya marjinal", "Biaya total", "Biaya peluang (opportunity cost)", "Biaya tetap", "Biaya variabel"],
+                answer: "Biaya peluang (opportunity cost)"
+            },
+            {
+                question: "Barang yang digunakan untuk menghasilkan barang atau jasa lain disebut barang...",
+                options: ["Konsumsi", "Ekonomi", "Bebas", "Modal (kapital)", "Substitusi"],
+                answer: "Modal (kapital)"
+            },
+            {
+                question: "Salah satu cara mengatasi masalah kelangkaan adalah dengan...",
+                options: ["Meningkatkan jumlah penduduk", "Menerapkan sistem ekonomi tertutup", "Menyusun skala prioritas kebutuhan", "Menghentikan semua kegiatan produksi", "Membatasi teknologi"],
+                answer: "Menyusun skala prioritas kebutuhan"
+            },
+            {
+                question: "Pendekatan dalam teori perilaku konsumen yang menyatakan bahwa kepuasan tidak dapat diukur secara pasti, melainkan hanya dapat diperbandingkan, disebut pendekatan...",
+                options: ["Kardinal", "Ordinal", "Marginal", "Utilitas", "Pendapatan"],
+                answer: "Ordinal"
+            }
+        ];
+
+        // Variabel Status Kuis Global
+        let currentQuestionIndex = 0;
+        let studentName = '';
+        let startTime = null;
+        let userAnswers = new Array(quizData.length).fill(null); // Menyimpan jawaban pengguna (indeks opsi)
+        const localStorageKey = 'quizCompleted_KegiatanEkonomi'; // Kunci untuk localStorage
+        const localStorageResultsKey = 'quizResults_KegiatanEkonomi';
+
+        // Peta untuk mengubah indeks (0-4) menjadi huruf opsi (A-E)
+        const optionMap = ['A', 'B', 'C', 'D', 'E'];
+
+        /**
+         * FUNGSI UTILITAS: Memuat dan Menyimpan Status Kuis
+         */
+
+        // Memeriksa status kuis di localStorage
+        function checkQuizStatus() {
+            const completedStatus = localStorage.getItem(localStorageKey);
+            const startScreen = document.getElementById('start-screen');
+            const completedMessage = document.getElementById('completed-message');
+            const quizScreen = document.getElementById('quiz-screen');
+
+            if (completedStatus) {
+                // Kuis sudah diselesaikan
+                startScreen.style.display = 'none';
+                quizScreen.style.display = 'none';
+                completedMessage.style.display = 'block';
+
+                const results = JSON.parse(completedStatus);
+                document.getElementById('completion-details').innerHTML = 
+                    `Nama: <strong>${results.name}</strong><br>
+                    Skor: <strong>${results.score}</strong><br>
+                    Waktu Selesai: <strong>${new Date(results.timestamp).toLocaleTimeString()}</strong>`;
+                
+                // Menonaktifkan tombol "Download Hasil" di layar hasil jika tidak ada hasil
+                const resultsScreen = document.getElementById('results-screen');
+                if(resultsScreen.style.display !== 'none') {
+                    document.querySelector('#results-screen .btn-secondary').disabled = false;
+                }
+
+                return true; // Mengembalikan true jika sudah selesai
+            }
+            return false; // Mengembalikan false jika belum selesai
+        }
+
+        // Fungsi yang dipanggil saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            checkQuizStatus();
+        });
+
+
+        /**
+         * FUNGSI UTAMA: Mulai Kuis
+         */
+        function startQuiz() {
+            studentName = document.getElementById('student-name-input').value.trim();
+
+            if (!studentName) {
+                alert("Mohon masukkan nama Anda untuk memulai kuis.");
+                return;
+            }
+
+            if (checkQuizStatus()) {
+                // Tidak perlu bertindak karena checkQuizStatus sudah menampilkan pesan
+                return;
+            }
+
+            // Inisialisasi Kuis
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            startTime = new Date(); // Catat waktu mulai
+
+            loadQuestion(currentQuestionIndex);
+        }
+
+        /**
+         * FUNGSI NAVIGASI: Memuat Soal dan Mengatur Tampilan
+         */
+        function loadQuestion(index) {
+            if (index < 0 || index >= quizData.length) return; // Batasi indeks
+
+            // Perbarui indeks soal saat ini
+            currentQuestionIndex = index;
+            const currentQuestion = quizData[index];
+
+            // 1. Perbarui Indikator Soal
+            document.getElementById('current-question-number').textContent = index + 1;
+
+            // 2. Perbarui Pertanyaan
+            document.getElementById('question-text').textContent = (index + 1) + ". " + currentQuestion.question;
+
+            // 3. Muat Opsi Jawaban
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = ''; // Kosongkan opsi sebelumnya
+
+            currentQuestion.options.forEach((optionText, i) => {
+                const optionId = `q${index}-option${i}`;
+                const checked = userAnswers[index] === i ? 'checked' : '';
+
+                optionsContainer.innerHTML += `
+                    <input type="radio" id="${optionId}" name="question-${index}" class="option-input" value="${i}" ${checked} onclick="recordAnswer(${index}, ${i})">
+                    <label for="${optionId}" class="option-label">
+                        <span>${optionMap[i]}</span>${optionText}
+                    </label>
+                `;
+            });
+
+            // 4. Atur Tampilan Tombol Navigasi
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // Tombol Sebelumnya
+            prevBtn.disabled = index === 0;
+
+            // Tombol Selanjutnya / Kirim
+            if (index === quizData.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+                // Aktifkan tombol Kirim hanya jika semua sudah dijawab
+                // submitBtn.disabled = userAnswers.includes(null); 
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                submitBtn.style.display = 'none';
+                // Aktifkan tombol Selanjutnya hanya jika soal ini sudah dijawab
+                // nextBtn.disabled = userAnswers[index] === null;
+            }
+        }
+        
+        // Catat Jawaban Pengguna
+        function recordAnswer(questionIndex, optionIndex) {
+            userAnswers[questionIndex] = optionIndex;
+            // Opsi: Aktifkan tombol navigasi setelah menjawab
+            // updateNavigationButtons();
+        }
+
+        // Fungsi navigasi ke soal berikutnya
+        function goToNextQuestion() {
+            // Optional: Paksa pengguna menjawab sebelum lanjut
+            if (userAnswers[currentQuestionIndex] === null) {
+                alert("Mohon jawab soal ini sebelum melanjutkan.");
+                return;
+            }
+            loadQuestion(currentQuestionIndex + 1);
+        }
+
+        // Fungsi navigasi ke soal sebelumnya
+        function goToPrevQuestion() {
+            loadQuestion(currentQuestionIndex - 1);
+        }
+
+        // Optional: Fungsi untuk memperbarui status disabled tombol navigasi
+        /*
+        function updateNavigationButtons() {
+            const index = currentQuestionIndex;
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (index < quizData.length - 1) {
+                nextBtn.disabled = userAnswers[index] === null;
+            } else {
+                submitBtn.disabled = userAnswers.includes(null);
+            }
+        }
+        */
+
+        /**
+         * FUNGSI AKHIR: Menghitung Skor dan Menyimpan Hasil
+         */
+        function submitQuiz() {
+            if (userAnswers.includes(null)) {
+                alert("Terdapat soal yang belum dijawab. Mohon periksa kembali jawaban Anda.");
+                return;
+            }
+            
+            if (!confirm("Apakah Anda yakin ingin mengirim semua jawaban?")) {
+                return;
+            }
+
+            // Hitung Skor
+            let correctCount = 0;
+            quizData.forEach((question, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const correctAnswerText = question.answer;
+
+                // Cari indeks jawaban yang benar
+                const correctIndex = question.options.findIndex(opt => opt === correctAnswerText);
+
+                if (userAnswerIndex === correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            // Hitung skor akhir (Skor = (Jawaban Benar / Total Soal) * 100)
+            const finalScore = Math.round((correctCount / quizData.length) * 100);
+            const endTime = new Date();
+            const timeTaken = (endTime - startTime) / 1000; // Waktu dalam detik
+
+            // Tampilkan Hasil
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('results-screen').style.display = 'block';
+            document.getElementById('final-score').textContent = `Skor Anda: ${finalScore} dari 100 (${correctCount} benar)`;
+            document.getElementById('motivation-message').innerHTML = `Waktu pengerjaan: <strong>${Math.round(timeTaken)} detik</strong>. Kerja bagus! Terus tingkatkan kemampuanmu 💪`;
+
+            // Simpan Hasil ke Local Storage (untuk mencegah pengerjaan ulang dan log hasil)
+            const resultData = {
+                name: studentName,
+                score: finalScore,
+                correct: correctCount,
+                total: quizData.length,
+                timeTaken: timeTaken,
+                timestamp: endTime.toISOString(),
+                answers: userAnswers
+            };
+
+            // 1. Set status selesai agar kuis tidak bisa diulang
+            localStorage.setItem(localStorageKey, JSON.stringify({
+                name: studentName,
+                score: `${finalScore}/100`,
+                timestamp: endTime
+            }));
+
+            // 2. Simpan hasil lengkap (untuk fitur download guru)
+            let allResults = JSON.parse(localStorage.getItem(localStorageResultsKey) || '[]');
+            allResults.push(resultData);
+            localStorage.setItem(localStorageResultsKey, JSON.stringify(allResults));
+            
+            // Nonaktifkan tombol kuis dan aktifkan pesan selesai
+            checkQuizStatus();
+
+            // Aktifkan tombol download
+            document.querySelector('#results-screen .btn-secondary').disabled = false;
+        }
+
+        /**
+         * FUNGSI: Ekspor Hasil ke CSV (Simulasi Mode Guru)
+         */
+        function exportResults() {
+            const allResults = JSON.parse(localStorage.getItem(localStorageResultsKey) || '[]');
+
+            if (allResults.length === 0) {
+                alert("Tidak ada hasil kuis yang tersimpan untuk diunduh.");
+                return;
+            }
+
+            // Header CSV
+            let csvContent = "Nama,Skor,Waktu Selesai (detik),Tanggal\n";
+
+            // Isi Baris CSV
+            allResults.forEach(result => {
+                const date = new Date(result.timestamp).toLocaleDateString();
+                const scoreText = `${result.score} (${result.correct}/${result.total})`;
+                const timeText = Math.round(result.timeTaken);
+
+                csvContent += `${result.name},${scoreText},${timeText},${date}\n`;
+            });
+
+            // Membuat Blob dan URL Objek
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            // Membuat link untuk diunduh secara otomatis
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "hasil_kuis_kegiatan_ekonomi.csv");
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click(); // Trigger unduhan
+            document.body.removeChild(link); // Hapus link
+
+            alert(`Berhasil mengunduh ${allResults.length} hasil kuis!`);
+        }
+    </script>
+</body>
+</html>
